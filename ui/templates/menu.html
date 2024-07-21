@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Menu {% endblock %}
+{% block nav_title %} Menu {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/menu.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" x-data>
+  <div>
+    <p class="h4">Categories</p>
+    <div class="border rounded border-secondary p-3">
+      <span>
+        <input type="radio" class="btn-check" x-model="$store.menus.filters.category" checked id="all-category" name="selected-category" autocomplete="off" value='' @click="fetchMenu()">
+        <label class="btn btn-outline-secondary" for="all-category">All</label>
+      </span>
+      <template x-for="category in $store.categories.data">
+        <span>
+          <input type="radio" x-model="$store.menus.filters.category" @click="fetchMenu(category.id)" class="btn-check" :value='category.id' :id="category.name" name="selected-category" autocomplete="off">
+          <label class="btn btn-outline-secondary" :for="category.name" x-text="category.name"></label>
+        </span>
+      </template>
+    </div>
+  </div>
+  <div class="mt-4">
+    <p class="h4">Menu</p>
+    <div class="border rounded border-secondary p-3" style="min-height: 200px;">
+      <button class="btn btn-primary float-end" id="create-modal-trigger" data-bs-toggle="modal" data-bs-target="#create-menu-modal">
+        Add menu
+      </button>
+      <table class="table table-hover mt-2">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr x-show="$store.menus.data.length === 0">
+            <td colspan="1000" class="text-center">No menu yet!</td>
+          </tr>
+          <template x-for="menu in $store.menus.data">
+            <tr>
+              <td x-text="menu.name"></td>
+              <td x-text="menu.category_name"></td>
+              <td x-text="menu.price"></td>
+              <td x-text="menu.quantity"></td>
+              <td>
+                <button class="btn btn-primary" @click="editMenu(menu)">Edit</button>
+                <button class="btn btn-danger" @click="deleteMenu(menu)">Delete</button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="create-menu-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog"  x-data>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Create Menu</h1>
+        <button type="button" id="close-menu-modal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-2">
+          <label for="name-input" class="form-label">Category</label>
+          <select class="form-select" x-model="$store.data.menu.category" aria-label="Select category">
+            <option value="" disabled>Please select</option>
+            <template x-for="category in $store.categories.data">
+              <option :value="category.id" x-text="category.name"></option>
+            </template>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="name-input" class="form-label">Name</label>
+          <input type="text" x-model="$store.data.menu.name" class="form-control" id="name-input" placeholder="Enter name here">
+        </div>
+        <div class="mb-2">
+          <label for="price-input" class="form-label">Price</label>
+          <input type="number" x-model="$store.data.menu.price" class="form-control" id="price-input" placeholder="Enter price here">
+        </div>
+        <div class="mb-2">
+          <label for="quantity-input" class="form-label">Quantity</label>
+          <input type="number" x-model="$store.data.menu.quantity" class="form-control" id="quantity-input" placeholder="Enter quantity here">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" @click.prevent="saveMenu()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
